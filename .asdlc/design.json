@@ -1,0 +1,24 @@
+{
+  "overview": "A minimal cloud-native application consisting of a single backend service that exposes a REST API endpoint. The service responds with 'Hello, World!' to incoming HTTP requests, providing a simple health check and verification mechanism for developers.",
+  "requirements": [
+    "The API must respond with 'Hello, World!' when called",
+    "The API must be accessible via HTTP/HTTPS",
+    "The API must provide a /health endpoint for health checks",
+    "The API must return a 200 OK status code on successful requests",
+    "The response must be in a standard format (JSON)"
+  ],
+  "components": [
+    {
+      "name": "hello-api",
+      "componentType": "service",
+      "language": "Go",
+      "dependsOn": [],
+      "entrypoint": "deployment/service",
+      "buildpack": "docker",
+      "appPath": "/hello-api",
+      "openAPISpec": "openapi: 3.0.3\ninfo:\n  title: Hello API\n  description: A simple API that returns 'Hello, World!'\n  version: 1.0.0\nservers:\n  - url: http://localhost:9090\n    description: Local development server\npaths:\n  /hello:\n    get:\n      summary: Get hello message\n      description: Returns a greeting message\n      operationId: getHello\n      responses:\n        '200':\n          description: Successful response\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  message:\n                    type: string\n                    example: Hello, World!\n                required:\n                  - message\n  /health:\n    get:\n      summary: Health check\n      description: Returns the health status of the service\n      operationId: healthCheck\n      responses:\n        '200':\n          description: Service is healthy\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  status:\n                    type: string\n                    example: ok\n                required:\n                  - status",
+      "componentAgentInstructions": "Implement a Go-based HTTP API service using the standard net/http library. The service must listen on port 9090. Create two endpoints: (1) GET /hello - returns JSON {\"message\": \"Hello, World!\"} with status 200, and (2) GET /health - returns JSON {\"status\": \"ok\"} with status 200. Use a standard HTTP router or mux. Set proper Content-Type headers to application/json for all responses. Include graceful shutdown handling for SIGTERM and SIGINT signals. Log incoming requests with method, path, and response status. The Dockerfile should use a multi-stage build with golang:1.21-alpine as builder and alpine:latest as runtime. Copy the binary to /app/hello-api and expose port 9090. The CMD should run the binary. Include error handling for all operations. Ensure the service starts within 5 seconds and responds to requests within 100ms under normal load."
+    }
+  ],
+  "sourceSpec": "spec-v1"
+}
